@@ -34,7 +34,8 @@
     MVVM 模式：
     M: Model(数据模型)
     V: View(视图)
-    VM: ViewModel 是一个同步 View 和 Model 的对象，View 和 Model 之间没有直接的联系，而是通过 ViewModel 进行交互。ViewModel 通过双向数据绑定把 View 层和 Model 层连接了起来，而 View 和 Model 之间的同步工作完全是自动的。因此开发者只需要
+    VM: ViewModel 是一个同步 View 和 Model 的对象，View 和 Model 之间没有直接的联系，而是通过 ViewModel 进行交互。
+    ViewModel 通过双向数据绑定把 View 层和 Model 层连接了起来，而 View 和 Model 之间的同步工作完全是自动的。因此开发者只需要
     关注业务逻辑，不需要手动操作DOM，不需要关注数据状态的同步问题，复杂的数据状态维护完全由 MVVM 来统一管理。
     VM 双向数据绑定：在 MVVM 框架中，View 和 Model 是不可以直接通讯的，在它们之间存在着 ViewModel 这个中间充当观察者的角色。
     当用户操作 View，ViewModel 感知到变化，然后通知 Model 发生相应的改变；反之当 Model 发生改变，ViewModel 也能感知到变化，
