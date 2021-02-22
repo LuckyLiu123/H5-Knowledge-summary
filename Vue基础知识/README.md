@@ -1,13 +1,16 @@
 
 ## 1. 谈谈你对Vue的理解吧？
-    Vue 是一套用于构建用户界面的渐进式框架，Vue.js 的核心库只关注视图层。使用MVVM模式，代码体积小，运行效率高。Vue.js包含声明式渲染，组件化系统，客户端路由，大规模状态管理，构建工具，数据持久化，跨平台支持等。
+    Vue 是一套用于构建用户界面的渐进式框架，Vue.js 的核心库只关注视图层。使用MVVM模式，代码体积小，运行效率高。Vue.js包含声明式
+    渲染，组件化系统，客户端路由，大规模状态管理，构建工具，数据持久化，跨平台支持等。
     组件机制：
         就是对一个功能和样式进行独立的封装，让HTML得到扩展，从而使代码得到复用，使得开发更灵活，更加高效；
         组件是可复制的 Vue 实例，它们与 new Vue 接收相同的选项，例如 data, computed, watch, methods 以及生命周期钩子等；
         每用一次组件，就会有一个它的新实例被创建；
-        可以通过 prop 向子组件传递数据，prop 是你可以在组件上注册的一些自定义 attribute，当一个值传递给一个 prop attribute 的时候，它就变成了那个组件实例的一个 property。
+        可以通过 prop 向子组件传递数据，prop 是你可以在组件上注册的一些自定义 attribute，当一个值传递给一个 prop attribute
+        的时候，它就变成了那个组件实例的一个 property。
     事件的传递：
-        Vue 内部实现了一个事件总线系统，即 EventBus。在 Vue 中可以使用 EventBus 来作为沟通桥梁的概念，每一个 Vue 的组件实例都继承了 EventBus，都可以接受事件 on 和发送事件 emit。
+        Vue 内部实现了一个事件总线系统，即 EventBus。在 Vue 中可以使用 EventBus 来作为沟通桥梁的概念，每一个 Vue 的组件实例
+        都继承了 EventBus，都可以接受事件 on 和发送事件 emit。
         父子组件通信时，父组件通过 prop 向子组件传递数据，子组件通过 this.$emit 向父组件传递数据；
     内容分发：
         Vue 实现了一套内容分发的 API，这套 API 的设计灵感源自 Web Components 规范草案，将 <slot> 元素作为承载分发内容的出口。
@@ -24,11 +27,15 @@
     缺点：
         - 所有的用户逻辑都在 Controller 里面操作，逻辑复杂且不利于维护。
         - 大量的 DOM 操作使页面渲染性能降低，加载速度变慢，影响用户体验。
-        - 当 Model 频繁发生变化，需要主动更新到 View；当用户的操作发生变化的时候，同样需要将变化的数据同步到 Model 中，这样工作不仅繁琐，而且很难维护复杂多变的数据状态。
+        - 当 Model 频繁发生变化，需要主动更新到 View；当用户的操作发生变化的时候，同样需要将变化的数据同步到 Model 中，这样工
+        作不仅繁琐，而且很难维护复杂多变的数据状态。
     
     由于 MVC 模式存在缺陷，于是衍生出了 MVVM 模式；
     MVVM 模式：
     M: Model(数据模型)
     V: View(视图)
-    VM: ViewModel 是一个同步 View 和 Model 的对象，View 和 Model 之间没有直接的联系，而是通过 ViewModel 进行交互。ViewModel 通过双向数据绑定把 View 层和 Model 层连接了起来，而 View 和 Model 之间的同步工作完全是自动的。因此开发者只需要关注业务逻辑，不需要手动操作DOM，不需要关注数据状态的同步问题，复杂的数据状态维护完全由 MVVM 来统一管理。
-    VM 双向数据绑定：在 MVVM 框架中，View 和 Model 是不可以直接通讯的，在它们之间存在着 ViewModel 这个中间充当观察者的角色。当用户操作 View，ViewModel 感知到变化，然后通知 Model 发生相应的改变；反之当 Model 发生改变，ViewModel 也能感知到变化，使 View 做出相应的更新。这个一来一回的过程就是双向数据绑定。
+    VM: ViewModel 是一个同步 View 和 Model 的对象，View 和 Model 之间没有直接的联系，而是通过 ViewModel 进行交互。ViewModel 通过双向数据绑定把 View 层和 Model 层连接了起来，而 View 和 Model 之间的同步工作完全是自动的。因此开发者只需要
+    关注业务逻辑，不需要手动操作DOM，不需要关注数据状态的同步问题，复杂的数据状态维护完全由 MVVM 来统一管理。
+    VM 双向数据绑定：在 MVVM 框架中，View 和 Model 是不可以直接通讯的，在它们之间存在着 ViewModel 这个中间充当观察者的角色。
+    当用户操作 View，ViewModel 感知到变化，然后通知 Model 发生相应的改变；反之当 Model 发生改变，ViewModel 也能感知到变化，
+    使 View 做出相应的更新。这个一来一回的过程就是双向数据绑定。
