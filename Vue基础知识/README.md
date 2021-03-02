@@ -40,3 +40,20 @@
     VM 双向数据绑定：在 MVVM 框架中，View 和 Model 是不可以直接通讯的，在它们之间存在着 ViewModel 这个中间充当观察者的角色。
     当用户操作 View，ViewModel 感知到变化，然后通知 Model 发生相应的改变；反之当 Model 发生改变，ViewModel 也能感知到变化，
     使 View 做出相应的更新。这个一来一回的过程就是双向数据绑定。
+
+## 3. Vuex 的思想
+    - 每一个 Vuex 里面都有一个全局的 Store，包含应用中大部分的状态 state;
+    - 这个 state 是单一的，和 Redux 类似，一个应用仅会包含一个 Store 实例;
+    - 单一状态树的好处是能够直接定位任一特定的状态片段，方便调试;
+    - Vuex 的状态存储是响应式的，当 Vue 组件从 Store 中读取状态的时候，若 Store 中的状态发生变化，那么相应的组件也会更新;
+    - 不能直接改变 Store 中的状态，改变 Store 中的状态的唯一途径就是显式的提交(commit) mutation。这样方便跟踪每一个状态的变化。
+        store.commit('increment');
+    - Vuex 通过 store 选项，把 state 注入到整个应用中，子组件通过 this.$store 来访问 state;
+    - mutation 都是同步事务，类似于 Redux 的 Reducer;
+    - Vuex 可以直接修改 state，不用每次都生成新的 state;
+    - 总的来说都是让 View 通过某种方式触发 Store 的事件或方法，Store 的事件或方法对 state 进行修改或返回一个新的 state，state 改变之后，View 发生相应的改变；
+
+    异步: Vuex 加入了 Action 来处理异步，Vuex 的想法是把同步和异步拆分开。异步操作的时候不会影响到同步操作，通过 Store.dispatch('increment') 来触发某个 Action。Action 里面不管执行多少异步操作，完成之后都通过 store.commit('increment') 来触发 mutation，一个 Action 里面可以触发多个 mutaion。
+    Vuex 把同步和异步操作通过 mutaion 和 Action 来分开处理，是一种方式，但不是唯一的方式。比如可以不用 Action，而是在应用的内部调用异步请求，请求完毕之后直接 commit mutation;
+
+## 4. Vue 和 React 的对比
