@@ -55,7 +55,7 @@ var shallowCopy = function(obj){
 }
 
 /**
- * 4. 深拷贝
+ * 3. 深拷贝
  * 深拷贝可以分为两个问题：浅拷贝 + 递归
 */
 //最简单的深拷贝
@@ -134,3 +134,15 @@ function cloneDeep(source, hash = new WeakMap()){
     }
     return target;
 }
+
+/**
+ * 检测数组的方法 Array.isArray 和 instanceof 有什么区别?
+ * - instanceof 假定了单一的全局执行环境，如果存在两个不同的全局执行环境，从而存在两个不同版本的 Array 构造函数。
+ * - 例如 intanceof Array 在 iframes 中不起作用.
+ * - Array.isArray 将是更可靠的解决方案。
+*/
+
+/**
+ * hasOwnProperty()方法：检测一个属性是否是对象的自有属性，或对象自身属性中是否具有指定的属性
+ * 写法: obj.hasOwnProperty(key)    Object.prototype.hasOwnProperty.call(obj, key)
+*/
