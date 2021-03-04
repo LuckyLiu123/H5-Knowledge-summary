@@ -26,6 +26,43 @@
     Person.prototype 也是 Person 构造函数的实例，所以 Person.prototype 也有 constructor 属性；
     结论：原型对象 (Person.prototype) 是构造函数 (Person) 的一个实例。
 
+    所有的函数对象的 __proto__ 都指向 Function.prototype，它是一个空函数(Empty function)，甚至包括根构造器 Object 和 Function 自身。
+    函数对象包括: Number, Boolean, String, Object, Date, Array, Function, RegExp, Error等，例如:
+    Number.__proto__ === Function.prototype;
+    Number.constructor === Function;
+
+    还包含自定义的函数对象
+    function Person(){}
+    var func = function(){}
+    Person.__proto__ === Function.prototype;
+    func.__proto__ === Function.prototype;
+
+    这说明来什么: 所有的构造器都来自于 Function.prototype，甚至包括根构造器 Object 和 Function 自身。所有构造器都继承了 Function.prototype 的属性和方法。如: length, call, apply, bind等。
+    
+    Function.prototype 是唯一一个 typeof 为 function 的 prototype。其他的构造器的 prototype 都是一个对象。
+    typeof Function.prototype === 'function';
+    typeof Object.prototype === 'object';
+    ...
+
+    所有的构造器(含内置和自定义)的 __proto__ 都是 Function.prototype，那 Function.prototype 的 __proto__ 是谁呢?
+    Function.prototype.__proto__ === Object.prototype;
+    说明所有的构造器也是一个普通的JS对象，可以给构造器添加/删除属性等。同时它也继承了 Object.prototype 上的所有方法: toString, valueOf, hasOwnproperty等。
+
+    最后 Object.prototype 的 __proto__ 是谁呢?
+    Object.prototype.__proto__ === null;
+    已经到顶了
+
+    原型链:
+        function Person(){}
+        var person1 = new Person();
+        person1.__proto__ === Person.prototype;
+        Person.prototype.__proto__ === Object.prototype;
+        Object.prototype.__proto__ === null;
+
+    原型和原型链是JS实现继承的一种模型。
+    原型链的形成是靠 __proto__ 而非 prototype;
+    实例和原型对象之间存在一个连接，不过要明确的一点是，这个连接存在于 实例(person1) 和 构造函数的原型对象(Person.prototype) 之间，不存在于 实例(person1) 和 构造函数(Person) 之间。
+
 ## 3. 执行上下文
     - 一个函数可以访问在它的调用上下文中定义的变量，这个就是词法作用域(Lexical scope).
     - 当执行一个函数的时候，就会创建一个执行上下文，并且压入执行上下文栈，当函数执行完毕的时候，就会将函数的执行上下文从栈中弹出。
