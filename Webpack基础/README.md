@@ -43,3 +43,41 @@
     webpack-dev-middleware 和 webpack-dev-server 的区别:
         - webpack-dev-server 只负责启动服务和前置的准备工作;
         - webpack-dev-middleware 负责所有文件相关的操作，主要是本地文件的编译和输出以及监听;
+
+### 3. webpack 性能调优
+    网络层面的性能优化主要是从 HTTP 连接开始，HTTP 连接这一层的优化才是网络优化的核心。
+    HTTP 优化有两个方向:
+        - 减少请求次数
+        - 减少单次请求所花费的时间
+
+    这两点优化直接指向了日常开发中非常常见的操作: 资源的压缩和合并。
+    webpack 的优化瓶颈主要是两方面:
+        - webpack 的构建过程太花时间
+        - webpack 打包的结果体积太大
+
+    构建过程提速策略:
+        1. 最常见的优化方案是使用 include 或 exclude 来帮我们避免不必要的转译，以 babel-loader 为例:
+            exclude: /(node_modules|brower_components)/,
+        通过 exclude 规避了对庞大的 node_modules 文件夹或 bower_components 文件夹的处理。但通过限定文件的范围带来的性能提升是有限的。除此之外，还可以开启缓存将转译结果缓存至文件系统，可以将 babel-loader 的工作效率提升两倍。
+            例如: loader: 'babel-loader?cacheDirectory=true'
+        2. 不放过第三方库: 第三方库以 node_modules 为主，它庞大得可怕，处理第三方库的方法有很多:
+            - Externals 不够聪明，一些情况下会引发重复打包的问题
+            - CommonsChunkPlugin 每次构建时都会重新构建一次 vendor
+            - DllPlugin 会把第三方库单独打包到一个文件中，这个文件就是一个单纯的依赖库。这个依赖库不会跟着你的业务代码一起被重新打包，只有当依赖自身发生版本变化时才会重新打包。
+        出于效率的考虑，推荐使用 DllPlugin。
+        3. 用 DllPlugin 处理文件，分为两步:
+            - 基于 dll 专属的配置文件，打包 dll 库
+            - 基于 webpack.config.js 文件，打包业务代码
+
+        运行 Dll 专属的配置文件，会在 dist 文件夹里出现两个文件:
+            - vendor-manifest.json 用来描述每个第三方库对应的具体路径
+            - vendor.js 是第三方打包结果
+        4. Happypack 将 loader 由单进程转换为多进程:
+            webpack 是单进程的，就算此刻存在多个任务，也只能排队一个接一个地等待处理，这是 webpack 的缺点。好在 CPU 是多核的，Happypack 会充分释放 CPU 在多核方面的优势，把任务分解给多个子进程去并发执行，大大提升打包效率。
+        5. 构建结果体积压缩:
+            通过包组成可视化工具: webpack-bundle-analyzer，文件结构可视化，找出导致体积过大的原因，它会以矩形树图的形式将包含各个模块的大小和依赖关系呈现出来。
+        6. 拆分资源，仍然围绕 DllPlugin 展开
+            - 删除冗余的代码: Tree-Shaking，意思是基于 import/export 语法，Tree-Shaking 可以在编译的过程中获悉哪些模块并没有真正的被使用，这些没用的代码，在最后打包的时候会被去除。Tree-Shaking 的针对性很强，适合用来处理模块级别的冗余代码。至于粒度更细的冗余代码的去除，往往会被整合进 JS 或 CSS 的压缩或分离过程中。
+        7. 按需加载
+            - 一次不加载完所有的内容，只加载此刻需要用到的部分(提前做拆分)
+        
