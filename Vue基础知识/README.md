@@ -91,3 +91,33 @@
     不同点: 它们其实都是vue对监听器的实现，只不过computed主要用于对同步数据的处理，watch则主要用于观测某个值的变化去完成一段开销较大的复杂业务逻辑
 
     能用 computed 的时候优先用 computed，避免了多个数据影响其中某个数据时多次调用 watch 的尴尬情况。
+
+### 9. Vue 中路由的三种传参方式
+    第一种方式 页面刷新数据不会丢失:
+        直接调用 this.$router.push 实现携带参数的跳转
+        this.$router.push({
+          path: `/particulars/${id}`,
+        })
+    需要在 Router 的 path 里面添加 /:id 来对应 $router.push 中 path 携带的参数，在子组件中可以使用 this.$route.params.id 来获取参数。
+
+    第二种方法 页面刷新数据会丢失:
+        通过路由属性中的name来确定匹配的路由，通过params来传递参数。
+        this.$router.push({
+          name: 'particulars',
+          params: {
+            id: id
+          }
+        })
+    注意这里在 Router 中不需要使用 /:id 来传递参数，子组件使用 this.$route.params.id 来获取参数。
+
+    第三种方法:
+        使用path来匹配路由，然后通过query来传递参数，这种情况下 query 传递的参数会显示在url后面?id=？
+        this.$router.push({
+          path: '/particulars',
+          query: {
+            id: id
+          }
+        })
+    子组件使用 this.$route.query.id 来获取参数。
+
+
