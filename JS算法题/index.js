@@ -146,3 +146,51 @@ function cloneDeep(source, hash = new WeakMap()){
  * hasOwnProperty()方法：检测一个属性是否是对象的自有属性，或对象自身属性中是否具有指定的属性
  * 写法: obj.hasOwnProperty(key)    Object.prototype.hasOwnProperty.call(obj, key)
 */
+
+
+
+/**
+ * 4. 如何让 (a == 1 && a == 2 && a == 3) 的值为true？
+*/
+//  == 操作符在左右数据类型不一致时，会先进行隐式转换。
+//  a == 1 && a == 2 && a == 3 的值意味着其不可能是基本数据类型。
+//  因此可以推测 a 是复杂数据类型，JS 中复杂数据类型只有 object
+//方法一: 部署 [Symbol.toPrimitive]，valueOf / toString 皆可
+    var a = {
+        [Symbol.toPrimitive]: (function(hint){
+            let i = 1;
+            return function(){
+                return i++;
+            }
+        })()
+    }
+
+//方法二: 利用数据劫持(Proxy/Object.defineProperty)
+    let i = 1;
+    let a = new Proxy({}, {
+        i: 1,
+        get: function(){
+            return () => this.i++;
+        }
+    });
+
+//方法三: 数组的 toString 接口默认调用数组的 join 方法，重写 join 方法
+    let a = [1, 2, 3];
+    a.join = a.shift;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
