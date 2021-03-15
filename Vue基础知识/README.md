@@ -120,4 +120,22 @@
         })
     子组件使用 this.$route.query.id 来获取参数。
 
+### 10. computed 和 watch 在源码中是如何实现的
+
+### 11. Vue 中哪些地方用到了闭包
+    (1) 数据响应化 Observer 中使用闭包
+        很多人会疑问，value 明明是形参，为什么给他赋值就能够达到数值改变的效果呢？形参不是出了这个函数就没用了么？
+	    其实，这就用到了闭包的原理，value是外层函数 defineReactive 的参数，而我们实际上使用value确是在内层的get或set方法里面
+		这样就形成了一个闭包的结构了。根据闭包的特性，内层函数可以引用外层函数的变量，并且当内层保持引用关系时外层函数的这个变量
+		不会被垃圾回收机制回收。那么,我们在设置值的时候，把val保存在value变量当中，然后get的时候再通过value去获取，这样，我们再访问obj.name时，无论是设置值还是获取值，实际上都是对value这个形参进行操作的。
+        function defineReactive(target, key, value){
+            return Object.defineProperty(target, key, {
+                get(){
+                    return value;
+                },
+                set(val){
+                    value = val;
+                }
+            })
+        }
 

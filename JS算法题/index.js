@@ -178,6 +178,44 @@ function cloneDeep(source, hash = new WeakMap()){
     let a = [1, 2, 3];
     a.join = a.shift;
 
+/**
+ * 5. promise.all中，其中一个promise出错，如何确保执行到最后
+ * 使用 map 方法过滤每一个 promise 任务，其中任意一个 promise 报错，return 一个返回值
+*/
+    var p1 = new Promise((resolve, reject) => {
+        resolve('p1');
+    });
+    var p2 = new Promise((resolve, reject) => {
+        resolve('p2');
+    });
+    var p3 = new Promise((resolve, reject) => {
+        reject('p3');
+    });
+    Promise.all([p1, p2, p3].map(p => p.catch(e => '出错后的返回值'))).then(value => {
+        console.log('value=>>', value);
+    }).catch(err => {
+        console.log('err=>>', err);
+    })
+
+/**
+ * 6. 实现两个数组的合并
+*/
+    var a = [1, 2, 3];
+    var b = [4, 5, 6];
+    //方法一:
+    var c = a.concat(b);
+
+    //方法二:
+    for(let i in b){
+        a.push(b[i]);
+    }
+
+    //方法三:
+    a.push.apply(a, b);
+
+    //方法四:
+    var d = [...a, ...b];
+
 
 
 
