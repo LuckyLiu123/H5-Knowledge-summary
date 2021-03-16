@@ -120,9 +120,13 @@
         })
     子组件使用 this.$route.query.id 来获取参数。
 
-### 10. computed 和 watch 在源码中是如何实现的
+### 10. watch 中 immediate，handler 和 deep 这三个属性的详解
+    immediate 和 handler: 在使用 watch 的时候有一个特点，就是当值第一次绑定的时候，不会执行监听函数，只有值在发生改变的时候，才会执行。如果需要在最初始绑定值的时候也执行函数，则需要 immediate 属性。
+    deep: 当需要监听一个对象的改变的时候，普通的 watch 方法无法监听到对象内部属性的改变，此时就需要 deep 属性对对象进行深度监听。
 
-### 11. Vue 中哪些地方用到了闭包
+### 11. computed 和 watch 在源码中是如何实现的
+
+### 12. Vue 中哪些地方用到了闭包
     (1) 数据响应化 Observer 中使用闭包
         很多人会疑问，value 明明是形参，为什么给他赋值就能够达到数值改变的效果呢？形参不是出了这个函数就没用了么？
 	    其实，这就用到了闭包的原理，value是外层函数 defineReactive 的参数，而我们实际上使用value确是在内层的get或set方法里面
