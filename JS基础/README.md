@@ -179,3 +179,20 @@
         2. 插入 script 标签
         3. 后台接受到请求，解析前端传过去的 callback 方法，返回该方法的调用，并且数据作为参数传入该方法
         4. 前端执行服务端返回的方法调用
+
+### 10. promise与async和await的区别
+    async/await是写异步代码的新方式，以前的方法有回调函数和Promise。
+    async/await是基于Promise实现的，它不能用于普通的回调函数。
+    async/await与Promise一样，是非阻塞的。
+    async/await使得异步代码看起来像同步代码，这正是它的魔力所在。
+
+    区别:
+        1. 函数前面多了一个aync关键字。await关键字只能用在aync定义的函数内。async函数会隐式地返回一个promise，该promise的reosolve值就是函数return的值。
+        2. 使用async函数可以让代码简洁很多，不需要像Promise一样需要些then，不需要写匿名函数处理Promise的resolve值，也不需要定义多余的data变量，还避免了嵌套代码。
+        3. async/await能够使得代码调试更简单。
+    
+    调试 Promise 很麻烦的理由:
+        1. 不能在返回表达式的箭头函数中设置断点
+        2. 如果你在.then代码块中设置断点，使用Step Over快捷键，调试器不会跳到下一个.then，因为它只会跳过异步代码。
+    
+    使用await/async时，你不再需要那么多箭头函数，这样你就可以像调试同步代码一样跳过await语句。
