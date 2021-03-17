@@ -216,6 +216,79 @@ function cloneDeep(source, hash = new WeakMap()){
     //方法四:
     var d = [...a, ...b];
 
+/**
+ * 7. 手写一个 Promise
+*/
+    class Promise{
+        constructor(executor){
+            this.state = 'pending';  //初始化 state 为等待状态
+            this.value = undefined;  //成功的值
+            this.reason = undefined;  //失败的原因
+            this.onResolvedCallbacks = [];   //成功存放的数组
+            this.onRejectedCallbacks = [];   //失败存放的数组
+
+            let resolve = value => {
+                if(this.state === 'pending'){
+                    this.state = 'fulfilled';   //resolve 调用后，state 转换为成功态
+                    this.value = value;   //存储成功的值
+                    this.onResolvedCallbacks.forEach(fn => fn());  //一旦 resolve 执行，调用成功数组的函数
+                }
+            }
+            
+            let reject = reason => {
+                if(this.state === 'pending'){
+                    this.state = 'rejected';   //reject调用后，state转换为失败态
+                    this.reason = reason;   //存储失败的原因
+                    this.onRejectedCallbacks.forEach(fn => fn());  //一旦 reject 执行，调用失败数组的函数
+                }
+            }
+
+            //如果 executor 执行报错，直接执行reject
+            try{
+                executor(resolve, reject);
+            } catch (err){
+                reject(err);
+            }
+        }
+
+        then(onFulfilled, onRejected){
+            //声明返回的 promise2
+            let promise2 = new Promise((resolve, reject) => {
+                //状态为 fulfilled，执行 onFulfilled，传入成功的值
+                if(this.state === 'fulfilled'){
+                    let x = onFulfilled(this.value);
+                    resolvePromise(promise2, x, resolve, reject);
+                }
+                //状态为 rejected，执行 onRejected，传入失败的原因
+                if(this.state === 'rejected'){
+                    let x = onRejected(this.reason);
+                    resolvePromise(promise2, x, resolve, reject);
+                }
+                //当状态为 pending 的时候
+                if(this.state === 'pending'){
+                    //onFulfilled 传入到成功的数组
+                    this.onResolvedCallbacks.push(() => {
+                        let x = onFulfilled(this.value);
+                        resolvePromise(promise2, x, resolve, reject);
+                    })
+                    //onRejected 传入到失败的数组
+                    this.onRejectedCallbacks.push(() => {
+                        let x = onRejected(this.reason);
+                        resolvePromise(promise2, x, resolve, reject);
+                    })
+                }
+            })
+            return promise2;
+        }
+    }
+
+    function resolvePromise(promise2, x, resolve, reject){
+        //循环引用报错
+        if(x === promise2){
+            return reject(new TypeError('Chaining cycle detected for promise'));
+        }
+    }
+
 
 
 
