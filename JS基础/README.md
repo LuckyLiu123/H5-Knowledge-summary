@@ -16,7 +16,7 @@
     task 被分为两大类，分别是 MacroTask(宏任务)和 MicroTask(微任务)，并且每个宏任务结束之后，都要清空所有的微任务。
     宏任务主要包含: script整体代码, setTimeout, setInterval, I/O, UI交互事件, setImmediate(Node.js环境)
     微任务主要包含: Promise, MutationObserver, process.nextTick(Node.js环境)
-    setTimetout/Promise 等API便是任务源，来自不同任务源的任务会进入到不同的任务队列。其中 setTimeout 和 setInterval 是同源的。
+    setTimeout/Promise 等API便是任务源，来自不同任务源的任务会进入到不同的任务队列。其中 setTimeout 和 setInterval 是同源的。
 
     注: JavaScript 是一门单线程语言，异步操作都是放在事件循环队列里面，等待主执行栈来执行的，并没有专门的异步执行线程。
 

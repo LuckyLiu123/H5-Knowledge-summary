@@ -252,33 +252,70 @@ function cloneDeep(source, hash = new WeakMap()){
         }
 
         then(onFulfilled, onRejected){
+            // onFulfilled如果不是函数，就忽略onFulfilled，直接返回value
+            onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : value => value;
+            // onRejected如果不是函数，就忽略onRejected，直接扔出错误
+            onRejected = typeof onRejected === 'function' ? onRejected : err => { throw err};
+
             //声明返回的 promise2
             let promise2 = new Promise((resolve, reject) => {
                 //状态为 fulfilled，执行 onFulfilled，传入成功的值
                 if(this.state === 'fulfilled'){
-                    let x = onFulfilled(this.value);
-                    resolvePromise(promise2, x, resolve, reject);
+                    //异步
+                    setTimeout(() => {
+                        try{
+                            let x = onFulfilled(this.value);
+                            resolvePromise(promise2, x, resolve, reject);
+                        } catch (e){
+                            reject(e);
+                        }
+                    }, 0)
                 }
                 //状态为 rejected，执行 onRejected，传入失败的原因
                 if(this.state === 'rejected'){
-                    let x = onRejected(this.reason);
-                    resolvePromise(promise2, x, resolve, reject);
+                    //异步
+                    setTimeout(() => {
+                        try{
+                            let x = onRejected(this.reason);
+                            resolvePromise(promise2, x, resolve, reject);
+                        } catch(e){
+                            reject(e);
+                        }
+                    }, 0)
                 }
                 //当状态为 pending 的时候
                 if(this.state === 'pending'){
                     //onFulfilled 传入到成功的数组
                     this.onResolvedCallbacks.push(() => {
-                        let x = onFulfilled(this.value);
-                        resolvePromise(promise2, x, resolve, reject);
+                        //异步
+                        setTimeout(() => {
+                            try{
+                                let x = onFulfilled(this.value);
+                                resolvePromise(promise2, x, resolve, reject);
+                            } catch(e){
+                                reject(e);
+                            }
+                        }, 0)
                     })
                     //onRejected 传入到失败的数组
                     this.onRejectedCallbacks.push(() => {
-                        let x = onRejected(this.reason);
-                        resolvePromise(promise2, x, resolve, reject);
+                        //异步
+                        setTimeout(() => {
+                            try{
+                                let x = onRejected(this.reason);
+                                resolvePromise(promise2, x, resolve, reject);
+                            } catch(e){
+                                reject(e);
+                            }
+                        }, 0)
                     })
                 }
             })
             return promise2;
+        }
+
+        catch(fn){
+            return this.then(null, fn);
         }
     }
 
@@ -287,6 +324,79 @@ function cloneDeep(source, hash = new WeakMap()){
         if(x === promise2){
             return reject(new TypeError('Chaining cycle detected for promise'));
         }
+        let called;  //防止多次调用
+        if(x != null && (typeof x === 'object' || typeof x === 'function')){
+            try{
+                // A+规定，声明then = x的then方法
+                let then = x.then;
+                // 如果then是函数，就默认是promise了
+                if(typeof then === 'function'){
+                    then.call((x, y) => {
+                        // 成功和失败只能调用一个
+                        if(called) return;
+                        called = true;
+                        // resolve的结果依旧是promise 那就继续解析
+                        resolvePromise(promise2, y, resolve, reject);
+                    }, err => {
+                        // 成功和失败只能调用一个
+                        if(called) return;
+                        called = true;
+                        reject(err);
+                    })
+                }else{
+                    resolve(x);  // 直接成功即可
+                }
+            } catch (err){
+                if(called) return;
+                called = true;
+                reject(err);
+            }
+        }else{
+            resolve(x);
+        }
+    }
+
+    //resolve 方法
+    Promise.resolve = function(val){
+        return new Promise((resolve, reject) => {
+            resolve(val);
+        })
+    }
+
+    //reject 方法
+    Promise.reject = function(){
+        return new Promise((resolve, reject) => {
+            reject(val);
+        })
+    }
+
+    //race 方法
+    Promise.race = function(promises){
+        return new Promise((resolve, reject) => {
+            for(let i = 0; i < promises.length; i++){
+                promises[i].then(resolve, reject);
+            }
+        })
+    }
+
+    //all方法(获取所有的promise，都执行then，把结果放到数组，一起返回)
+    Promise.all = function(promises){
+        let arr = [];
+        let i = 0;
+        function processData(index, data){
+            arr[index] = data;
+            i++;
+            if(i == promises.length){
+                resolve(arr);
+            }
+        }
+        return new Promise((resolve, reject) => {
+            for(let i = 0; i < promises.length; i++){
+                promises[i].then(data => {
+                    processData(i, data);
+                }, reject);
+            }
+        })
     }
 
 

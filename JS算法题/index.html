@@ -7,7 +7,19 @@
     <title>Document</title>
 </head>
 <body>
+    <ul id="list">
+        <li>a</li>
+        <li>b</li>
+        <li>c</li>
+    </ul>  
     
     <script src="./index.js"></script>
+    <script>
+        let dom = document.getElementById('list');
+        dom.addEventListener('click', function(e){
+            console.log(e);
+        })
+
+    </script>
 </body>
 </html>
