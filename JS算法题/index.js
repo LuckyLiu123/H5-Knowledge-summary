@@ -399,10 +399,75 @@ function cloneDeep(source, hash = new WeakMap()){
         })
     }
 
+/**
+ * 8. 实现一个继承
+ * 
+ * - 一般只建议写这种，因为其它方式的继承会在一次实例中调用两次父类的构造函数或有其它缺点。
+ * - 核心实现是：用一个 F 空的构造函数去取代执行了 Parent 这个构造函数。
+*/
+function Parent(name){
+    this.name = name;
+}
+
+Parent.prototype.sayName = function(){
+    console.log('Parent name:', this.name);
+}
+
+function Child(name, parentName){
+    Parent.call(this, parentName);
+    this.name = name;
+}
+
+function create(proto){
+    function F(){};
+    F.prototype = proto;
+    return new F();
+}
+
+Child.prototype = create(Parent.prototype);
+Child.prototype.sayName = function(){
+    console.log('Child name:', this.name);
+}
+Child.prototype.constructor = Child;
+
+var parent = new Parent('father');
+parent.sayName();
+
+var child = new Child('son', 'father');
 
 
+/**
+ * 9. 实现一个JS函数柯里化
+ * 
+ * 柯里化: 在计算机科学中，柯里化（Currying）是把接受多个参数的函数变换成接受一个单一参数（最初函数的第一个参数）
+ *        的函数，并且返回接受余下的参数且返回结果的新函数的技术。
+ * 
+ * 函数柯里化的主要作用和特点就是参数复用、提前返回和延迟执行。
+*/
 
+function curry(fn, args){
+    var length = fn.length;
+    var args = args || [];
+    return function(){
+        var newArgs = args.concat(Array.prototype.slice.call(arguments));
+        if(newArgs.length < length){
+            return curry.call(this, fn, newArgs);
+        }else{
+            return fn.apply(this, newArgs);
+        }
+    }
+}
 
+function multiFn(a, b, c){
+    return a * b * c;
+}
+
+var multi = curry(multiFn);
+
+multi(2)(3)(4);
+multi(2,3,4);
+multi(2)(3,4);
+multi(2,3)(4);
 
 
 
