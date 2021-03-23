@@ -469,14 +469,59 @@ multi(2,3,4);
 multi(2)(3,4);
 multi(2,3)(4);
 
+// ES6 的写法
+const curry = (fn, arr = []) => (...args) => (
+    arg => arg.length === fn.length
+    ? fn(...arg)
+    : curry(fn, arg)
+)([...arr, ...args])
+
+var curryTest = curry((a, b, c, d) => a + b + c + d);
+curryTest(1,2,3)(4)   //返回10
+curryTest(1,2)(4)(3)  //返回10
+curryTest(1,2)(3,4)   //返回10
 
 
+/**
+ * 10. 实现一个call或 apply
+*/
+/**
+ * call核心：
+*      - 将函数设为对象的属性
+*      - 执行&删除这个函数
+*      - 指定this到函数并传入给定参数执行函数
+*      - 如果不传入参数，默认指向为 window
+*/
+Function.prototype.call2 = function(content = window){
+    content.fn = this;
+    let args = [...arguments].slice(1);
+    let result = content.fn(...args);
+    delete content.fn;
+    return result;
+}
 
+let foo = {
+    value: 1
+}
 
+function bar(name){
+    console.log(name);
+    console.log(this.value);
+}
 
+bar.call2(foo, 'black');
 
-
-
-
-
+// apply()的实现和call()类似，只是参数形式不同
+Function.prototype.apply2 = function(context = window){
+    context.fn = this;
+    let result;
+    // 判断是否有第二个参数
+    if(arguments[1]){
+        result = context.fn(...arguments[1]);
+    }else{
+        result = context.fn()
+    }
+    delete context.fn();
+    return result;
+}
 
