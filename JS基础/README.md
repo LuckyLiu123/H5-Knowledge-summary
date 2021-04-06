@@ -18,6 +18,9 @@
     微任务主要包含: Promise, MutationObserver, process.nextTick(Node.js环境)
     setTimeout/Promise 等API便是任务源，来自不同任务源的任务会进入到不同的任务队列。其中 setTimeout 和 setInterval 是同源的。
 
+    程序先执行同步任务，再执行异步任务。同步任务分为宏任务和微任务。
+    执行顺序: 执行同步任务(先执行宏任务，再执行微任务)，遍历异步队列，执行异步任务。
+
     注: JavaScript 是一门单线程语言，异步操作都是放在事件循环队列里面，等待主执行栈来执行的，并没有专门的异步执行线程。
 
 
