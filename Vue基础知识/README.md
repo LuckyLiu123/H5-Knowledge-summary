@@ -154,3 +154,48 @@
             })
         }
 
+### 15. Vue 项目中路由权限控制怎么实现
+    将路由配置按用户类型分割为 用户路由 和 基本路由，不同的用户类型可能存在不同的 用户路由，具体依赖实际业务。
+    - 用户路由: 当前用户所特有的路由
+    - 基本路由：所有用户均可以访问的路由
+
+    实现控制的方式分两种：
+        - 通过vue-router addRoutes 方法注入路由实现控制
+        - 通过vue-router beforeEach 钩子限制路由跳转
+
+    addRoutes 方式：
+        通过请求服务端获取当前用户路由配置，编码为 vue-router 所支持的基本格式（具体如何编码取决于前后端协商好的数据格式），通过调用 this.$router.addRoutes 方法将编码好的用户路由注入到现有的 vue-router 实例中去，以实现用户路由。
+    
+    beforeEach 方式：
+        通过请求服务端获取当前用户路由配置，通过注册 router.beforeEach 钩子对路由的每次跳转进行管理，每次跳转都进行检查，如果目标路由不存再于 基本路由 和 当前用户的 用户路由 中，取消跳转，转为跳转错误页。
+
+    两种方式的原理其实都是一样的，只不过 addRoutes 方式 通过注入路由配置告诉 vue-router ：“当前我们就只有这些路由，其它路由地址我们一概不认”，而 beforeEach 则更多的是依赖我们手动去帮 vue-router 辨别什么页面可以去，什么页面不可以去。
+
+    addRoutes 的缺点: addRoutes 方法仅仅是帮你注入新的路由，并没有帮你剔除其它路由！
+    解决办法: 通过新建一个全新的 Router，然后将新的 Router.matcher 赋给当前页面的管理 Router，以达到更新路由配置的目的。
+    
+    ```
+    import Vue from 'vue'
+    import Router from 'vue-router'
+    Vue.use(Router)
+    const createRouter = () => new Router({
+        mode: 'history',
+        routes: []
+    })
+    const router = createRouter()
+    export function resetRouter () {
+        const newRouter = createRouter()
+        router.matcher = newRouter.matcher
+    }
+    export default router
+    ```
+
+    还可以在路由的配置文件中设置 requireAuth 属性指定哪些页面需要登陆权限，然后在 beforeEach 中通过 to.meta.requireAuth 来判断。
+    router.beforeEach((to, from, next) => {
+        let islogin = localStorage.getItem("islogin");
+        if(to.meta.requireAuth && islogin) {
+            next();
+        }else{
+            next("/login");
+        }
+    })

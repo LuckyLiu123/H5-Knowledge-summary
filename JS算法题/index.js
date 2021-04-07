@@ -525,3 +525,33 @@ Function.prototype.apply2 = function(context = window){
     return result;
 }
 
+/**
+ * 11. 实现一个bind()方法
+ * bind 方法会创建一个新函数，bind的第一个参数将作为新函数运行时的this，
+ * 其余的参数将会在新函数后续被调用时位于其他实参前被传入。
+ * 此外，bind()实现需要考虑实例化后对原型链的影响。
+*/
+Function.prototype.bind2 = function(content){
+    if(typeof this != 'function'){
+        throw Error('not a function');
+    }
+    // 若没问参数类型则从这开始写
+    let fn = this;
+    let args = [...arguments].slice(1);
+
+    let resFn = function(){
+        return fn.apply(this instanceof resFn ? this : content, args.concat(...arguments));
+    }
+
+    //新函数也能使用 new 操作符创建对象，构造器为原函数
+    /**
+     * 那么我们知道new fn()操作执行时，一个新的对象会被创建，并且该对象继承自fn.prototype，然后fn会被执行，
+     * fn的this指向这个新对象（当然最后还有return的过程）。从new操作的顺序来看我们能通过 this instanceof fn 这段
+     * 代码判断某次调用是否通过new调用，如果是通过new调用的，那么this就是fn的实例。直接调用函数时的this指向global。
+    */
+    function tmp(){};
+    tmp.prototype = this.prototype;
+    resFn.prototype = new tmp();
+
+    return resFn;
+}
