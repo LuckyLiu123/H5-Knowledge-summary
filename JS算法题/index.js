@@ -555,3 +555,46 @@ Function.prototype.bind2 = function(content){
 
     return resFn;
 }
+
+/**
+ * 12. J原型链继承
+*/
+    // Personal 对象想要继承 Main 对象，则通过将 Main 的实例赋值给 Personal 的原型对象 
+    Personal.prototype = new Main();
+    // 如此 Personal 原型对象就能通过 Main 对象的实例中的 [[Prototype]] 来访问到 Main 原型对象中的属性和方法了。而此时，
+    // Personal 原型对象则与 Personal 函数断开了联系，因为 Personal 原型对象被重新赋值了，所以还需要重新将 Personal 函数
+    // 和 Personal 原型对象建立联系:
+    Personal.prototype.constructor = Personal;
+
+    //完整代码如下:
+    function Main(){
+
+    }
+    Main.prototype.sex = '男';
+    Main.prototype.eat = function(){
+        console.log('Main eat ...');
+    }
+
+    function Personal(){
+
+    }
+    
+    //先继承
+    Personal.prototype = new Main();
+    Personal.prototype.constructor = Personal;
+
+    //后定义属性和方法
+    Personal.prototype.name = '张三';
+    Personal.prototype.sayName = function(){
+        console.log('Personal name');
+    }
+
+    var p = new Personal();
+    console.log(p.sex);
+    console.log(p.name);
+    p.eat();
+    p.sayName();
+
+    // 如果先定义 Personal 的属性和方法就会发现 p.name 为 undefined，sayName()这个方法也没有找到。原因在于代码后面重新赋值了
+    // Personal.prototype = new Main(); 因此找不到一开始定义在 Personal.prototype 上的 name 属性和 sayName()方法。因此
+    // 在使用原型链继承的时候，要在继承之后再去原型对象上定义自己所需要的属性和方法。
