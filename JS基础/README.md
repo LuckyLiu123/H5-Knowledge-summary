@@ -200,3 +200,45 @@
     
     使用await/async时，你不再需要那么多箭头函数，这样你就可以像调试同步代码一样跳过await语句。
 
+### 11. 插入大量DOM元素的方法(性能优化)
+    比如插入一千条DOM节点到页面中，一般会使用循环。但是，由于渲染回流，在for循环内部多次 appendChild 会造成多次渲染，从而出现卡顿，闪屏的现象。
+    在 javascript 中通常使用 appendChild()方法来操作 DOM 元素。
+    每次调用该方法时，浏览器都会重新渲染页面。如果大量的更新DOM节点，则会非常消耗性能，影响用户体验。
+    javascript 提供了一个文档碎片 DocumentFragment 的机制。
+    如果将文档中的节点添加到文档片段中，就会从文档树中移除该节点。
+    把所有要构造的节点都放在文档片段中执行，这样可以不影响文档树，也就不会造成页面渲染。
+    当节点都构造完成后，再将文档片段对象添加到页面中，这时所有的节点都会一次性渲染出来。
+    这样就能减少浏览器负担，提高页面渲染速度。
+
+    ```
+    <ul id="root"></ul>
+    <script>
+        var root = document.getElementById(root);
+        var fragment = document.createDocumentFragment();
+        for(let i = 0; i < 1000; i++){
+            let li = document.createElement('li');
+            li.innerHTML = '我是li标签';
+            fragment.appendChild(li);
+        }
+        root.appendChild(fragment);
+    </script>
+    ```
+
+### 12. 24小时弹出一次广告
+    ```
+    function setcookie(){
+        let d = new Date();
+        d.setTime(d.getTime() + 24 * 60 * 60 * 1000);
+        document.cookie = 'ad=popup-ad;expires=' + d.toGMTString();
+        let result = document.cookie;
+        return result;
+    }
+
+    if(!document.cookie.includes('ad=')){
+        $('.ad').show();
+        setcookie();
+    }else{
+        $('.ad').hide();
+    }
+
+    ```
