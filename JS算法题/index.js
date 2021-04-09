@@ -578,7 +578,7 @@ Function.prototype.bind2 = function(content){
     function Personal(){
 
     }
-    
+
     //先继承
     Personal.prototype = new Main();
     Personal.prototype.constructor = Personal;
@@ -598,3 +598,77 @@ Function.prototype.bind2 = function(content){
     // 如果先定义 Personal 的属性和方法就会发现 p.name 为 undefined，sayName()这个方法也没有找到。原因在于代码后面重新赋值了
     // Personal.prototype = new Main(); 因此找不到一开始定义在 Personal.prototype 上的 name 属性和 sayName()方法。因此
     // 在使用原型链继承的时候，要在继承之后再去原型对象上定义自己所需要的属性和方法。
+
+/**
+ * 13. 实现一个 new 操作符
+ * 
+ * new 操作符做的事情:
+ *   - 它创建一个全新的对象
+ *   - 它会被执行 [[prototype]] (也就是__proto__)连接
+ *   - 它使 this 指向新创建的对象
+ *   - 通过 new 创建的每个对象将最终被 [[prototype]] 链接到这个函数的 prototype 对象上
+ *   - 如果函数没有返回对象类型 Object(包含 Function, Array, Date, RegExg, Error)，那么 new 表达式中的函数调用将返回该对象引用
+*/
+function New(func){
+    var res = {};
+    if(func.prototype !== null){
+        res.__proto__ = func.prototype;
+    }
+
+    var ret = func.apply(res, Array.prototype.slice.call(arguments, 1));
+    if((typeof ret === 'object' || typeof ret === 'function') && ret !== null){
+        return ret;
+    }
+    return res;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
