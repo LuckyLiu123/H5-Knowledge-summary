@@ -225,7 +225,7 @@
     ```
 
 ### 12. 24小时弹出一次广告
-    ```js script
+    ```javascript
     function setcookie(){
         let d = new Date();
         d.setTime(d.getTime() + 24 * 60 * 60 * 1000);
@@ -406,7 +406,7 @@
 
         race的使用场景:
             比如我们可以用race给某个异步请求设置超时时间，并且在超时后执行相应的操作
-        ```js script
+        ```javascript
             //请求某个图片资源
             function requestImg(){
                 var p = new Promise((resolve, reject) => {
@@ -436,7 +436,28 @@
             });
         ```
 
+### 18. 事件委托
+    利用事件冒泡的特性，只指定一个事件处理程序，就可以管理某一类型的所有事件。比如将本应该注册在子元素上的处理事件注册在父元素上，这样点击子元素时发现其本身没有相应事件就到父元素上寻找作出相应。
+    优势:
+        - 减少DOM操作，提高性能。
+        - 随时可以添加子元素，添加的子元素会自动有相应的处理事件。
 
+    <ul id="ul1">
+        <li id="aaa">111</li>
+        <li id="bbb">222</li>
+        <li id="ccc">333</li>
+        <li id="ddd">444</li>
+    </ul>
+    ```js script
+        var $ul = document.getElementById('ul1');
+        $ul.onClick = function(e){
+            var e = e || window.event;
+            var target = e.target || e.srcElement;
+            if(target.nodeName.toLowerCase() === 'li'){
+                console.log(target.id);
+            }
+        }
+    ```
 
 
 

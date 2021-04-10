@@ -8,17 +8,21 @@
 </head>
 <body>
     <ul id="list">
-        <li>a</li>
-        <li>b</li>
-        <li>c</li>
+        <li id="zhangsan">a</li>
+        <li id="lisi">b</li>
+        <li id="wangwu">c</li>
     </ul>  
     
     <script src="./index.js"></script>
     <script>
         let dom = document.getElementById('list');
-        dom.addEventListener('click', function(e){
-            console.log(e);
-        })
+        dom.onclick = function(e){
+            var e = e || window.event;
+            var target = e.target || e.srcElement;
+            if(target.nodeName.toLowerCase() === 'li'){
+                console.log(target.id);
+            }
+        }
 
     </script>
 </body>
