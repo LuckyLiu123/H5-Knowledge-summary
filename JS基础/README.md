@@ -210,7 +210,7 @@
     当节点都构造完成后，再将文档片段对象添加到页面中，这时所有的节点都会一次性渲染出来。
     这样就能减少浏览器负担，提高页面渲染速度。
 
-    ```
+    ```js script
     <ul id="root"></ul>
     <script>
         var root = document.getElementById(root);
@@ -225,7 +225,7 @@
     ```
 
 ### 12. 24小时弹出一次广告
-    ```
+    ```js script
     function setcookie(){
         let d = new Date();
         d.setTime(d.getTime() + 24 * 60 * 60 * 1000);
@@ -266,6 +266,12 @@
     5中基本数据类型: Undefined, Null, Boolean, Number, String;
     引用类型: Object;
 
+    ES6 引入了一种新的原始数据类型Symbol，表示独一无二的值，它是 JavaScript 语言的第七种数据类型。
+    ES5 的对象属性名都是字符串，这容易造成属性名的冲突。比如，你使用了一个他人提供的对象，但又想为这个对象添加新的方法（mixin 模
+    式），新方法的名字就有可能与现有方法产生冲突。
+    Symbol 值通过Symbol函数生成。这就是说，对象的属性名现在可以有两种类型，一种是原来就有的字符串，另一种就是新增的 Symbol 类型。
+    Symbol函数前不能使用new命令，否则会报错。这是因为生成的 Symbol 是一个原始类型的值，不是对象。也就是说，由于 Symbol 值不是对象，所以不能添加属性。基本上，它是一种类似于字符串的数据类型。
+
     - 基本类型值在内存中占据固定大小的空间，因此被保存在栈内存中；
     - 引用类型的值是对象，保存在堆内存中；
     - JavaScript 不允许直接访问内存中的位置，也就是说不能直接操作对象的内存空间。在操作对象时，实际上是在操作对象的引用而不是实
@@ -276,7 +282,7 @@
 
 ### 15. JS中判断变量的类型的方法
     typeof: 返回一个字符串，表示未经计算的操作符的类型
-        ```
+        ```js script
             typeof 333      //number
             typeof true     //boolean
             typeof 'aaa'    //string
@@ -294,7 +300,7 @@
         如果表达式 obj instanof Foo 返回true，则并不意味着该表达式会永远返回true，因为Foo.prototype属性的值有可能会改变，改变之后的值很有可能不存在于obj的原型链之上。另一种情况下，原表达式的值也会改变，就是改变对象obj的原型链的情况，可以借助__proto__属性来实现: obj.__proto__ = {}，之后 obj instanceof Foo就会返回false。
 
     constructor:
-        ```
+        ```js script
             function a(){}
             var b = new a();
             b.constructor = a;    //true
@@ -304,7 +310,7 @@
 
     Object.prototype.toString:
         toString()方法返回一个表示该对象的字符串。可以通过toString()方法来获取每个对象的类型。为了每个对象都能通过 Object.prototype.toString() 来检测，需要以 Function.prototype.call() 或 Function.prototype.apply() 的形式来调用，传递要检查的对象作为第一个参数。
-        ```
+        ```js script
             var toString = Object.prototype.toString;
             toString.call(333);         //[object Number]
             toString.call('aaa');       //[object String]
@@ -349,4 +355,148 @@
 
     改变原数组的方法: pop(), push(), shift(), unshift(), sort(), reverse(), splice().
     不会改变原数组的方法: concat(), join(), slice(), toString(), indexOf(), lastIndexOf(), reduce(), reduceRight(), filter(), forEach(), map(), every(), some().
+
+### 17. 什么是 Promise
+    Promise 是异步编程的一种解决方案：从语法上讲，promise是一个对象，从它可以获取异步操作的消息；从本意上讲，它是承诺，承诺它过
+    一段时间会给你一个结果。promise有三种状态： pending(等待态)，fulfiled(成功态)，rejected(失败态)；状态一旦改变，就不会再
+    变。创造promise实例后，它会立即执行。
+
+    promise是用来解决两个问题的：
+        - 回调地狱，代码难以维护， 常常第一个的函数的输出是第二个函数的输入这种现象
+        - promise可以支持多个并发的请求，获取并发请求中的数据
+        - 这个promise可以解决异步的问题，本身不能说promise是异步的
+
+    Promise是一个构造函数，自己身上有all、reject、resolve这几个方法，原型上有then、catch等方法。
+    Promise的构造函数接收一个参数：函数，并且这个函数需要传入两个参数：
+        - resolve ：异步操作执行成功后的回调函数
+        - reject：异步操作执行失败后的回调函数
+
+    catch的用法:
+        它和 then 的第二个参数一样，用来指定reject的回调。不过它还有另外一个作用：在执行resolve的回调（也就是then中的第一个参数）时，如果抛出异常了（代码出错了），那么并不会报错卡死js，而是会进到这个catch方法中。请看下面的代码：
+        ```js script
+            p.then((data) => {
+                console.log('resolved', data);
+                console.log(somedata); //此处的somedata未定义
+            })
+            .catch((err) => {
+                console.log('rejected', err);
+            });
+        ```
+        代码进到catch方法里面去了，而且把错误原因传到了err参数中。即便是有错误的代码也不会报错了，这与 try/catch 语句有相同的功能
+    
+    all的用法:
+        谁跑的慢，以谁为准执行回调。all接收一个数组参数，里面的值最终都算返回Promise对象。Promise的all方法提供了并行执行异步操作的能力，并且在所有异步操作执行完后才执行回调。
+        ```js script
+            let Promise1 = new Promise(function(resolve, reject){})
+            let Promise2 = new Promise(function(resolve, reject){})
+            let Promise3 = new Promise(function(resolve, reject){})
+            
+            let p = Promise.all([Promise1, Promise2, Promise3])
+            
+            p.then(funciton(){
+                // 三个都成功则成功  
+            }, function(){
+                // 只要有失败，则失败 
+            })
+        ```
+        有一个场景是很适合用这个: 一些游戏类的素材比较多的应用，打开网页时，预先加载需要用到的各种资源如图片、flash以及各种静态文件。所有的都加载完后，我们再进行页面的初始化。
+
+    race的用法:
+        谁跑的快，以谁为准执行回调。
+
+        race的使用场景:
+            比如我们可以用race给某个异步请求设置超时时间，并且在超时后执行相应的操作
+        ```js script
+            //请求某个图片资源
+            function requestImg(){
+                var p = new Promise((resolve, reject) => {
+                    var img = new Image();
+                    img.onload = function(){
+                        resolve(img);
+                    }
+                    img.src = '图片的路径';
+                });
+                return p;
+            }
+
+            //延时函数，用于给请求计时
+            function timeout(){
+                var p = new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        reject('图片请求超时');
+                    }, 5000);
+                });
+                return p;
+            }
+
+            Promise.race([requestImg(), timeout()]).then((data) =>{
+                console.log(data);
+            }).catch((err) => {
+                console.log(err);
+            });
+        ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
