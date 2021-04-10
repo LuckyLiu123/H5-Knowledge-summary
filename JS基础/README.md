@@ -273,3 +273,80 @@
     - 包含引用类型值的变量实际上包含的并不是对象本身，而是一个指向该对象的指针；
     - 从一个变量向另一个变量复制引用类型的值，复制的其实是指针，因此两个变量最终都指向同一个对象；
     - 确定一个值是哪几种基本类型可以使用 typeof 操作符，而确定一个值是哪种引用类型可以使用 instanceof 操作符；
+
+### 15. JS中判断变量的类型的方法
+    typeof: 返回一个字符串，表示未经计算的操作符的类型
+        ```
+            typeof 333      //number
+            typeof true     //boolean
+            typeof 'aaa'    //string
+            typeof []       //array
+            typeof function(){}    //function
+            typeof {}       //object
+            typeof undefined   //undefined
+            typeof null     //object
+        ```
+
+    instanceof: 
+        用于检测构造函数的prototype属性是否出现在某个实例对象的原型链上。如果变量是给定引用类型的实例，那么instanceof操作符始
+        终会返回true。只有引用数据类型(Array, Function, Object)能被精准判断，其他(Number, Boolean, String)字面值不能被
+        instanceof精准判断。
+        如果表达式 obj instanof Foo 返回true，则并不意味着该表达式会永远返回true，因为Foo.prototype属性的值有可能会改变，改变之后的值很有可能不存在于obj的原型链之上。另一种情况下，原表达式的值也会改变，就是改变对象obj的原型链的情况，可以借助__proto__属性来实现: obj.__proto__ = {}，之后 obj instanceof Foo就会返回false。
+
+    constructor:
+        ```
+            function a(){}
+            var b = new a();
+            b.constructor = a;    //true
+        ```
+        当创建变量b时，js会在b的原型上添加 constructor 属性，指向b的引用。
+        注意： null 和 undefined 是无效的，因此没有 constructor 属性。重写对象的 prototype 之后，原有的 constructor 引用会丢失，造成判断不准确的问题。
+
+    Object.prototype.toString:
+        toString()方法返回一个表示该对象的字符串。可以通过toString()方法来获取每个对象的类型。为了每个对象都能通过 Object.prototype.toString() 来检测，需要以 Function.prototype.call() 或 Function.prototype.apply() 的形式来调用，传递要检查的对象作为第一个参数。
+        ```
+            var toString = Object.prototype.toString;
+            toString.call(333);         //[object Number]
+            toString.call('aaa');       //[object String]
+            toString.call(true);        //[object Boolean]
+            toString.call([]);          //[object Array]
+            toString.call(function(){})    //[object Function]
+            toString.call({});          //[object Object]
+            toString.call(undefined);   //[object Undefined]
+            toString.call(null);        //[object Null]
+
+            //内置对象
+            toString.call(new Date);    //[object Date]
+            toString.call(new String);  //[object String]
+            toString.call(Math);        //[object Math]
+        ```
+        
+
+
+### 16. 数组 Array 中常用的方法
+    - pop(): 从数组的末尾移除最后一项，减少数组的length值，然后返回移除的项。
+    - push(): 接收任意数量的参数，把它们逐个添加到数组的末尾，并返回修改后数组的长度。
+    - shift(): 移除数组中的第一个项并返回该项，同时将数组长度减1。
+    - unshift(): 在数组前端添加任意个项并返回新数组的长度。
+    - reverse(): 反转数组的顺序。
+    - sort(): 对数组项进行排序。为了实现排序，该方法会调用每个数组项的 toString() 转型方法，然后比较得到的字符串，以确定如何排
+    序。即时数组中的每一项都是数值，该方法比较的也是字符串。
+    - splice(): 可删除从 index 处开始的零个或多个元素，并且用参数列表中声明的一个或多个值来替换那些被删除的元素。返回值是所有删
+    除的元素组成的数组，如果没有删除任何元素，将会得到一个空数组。
+    - slice(): 基于当前数组中的一个或多个项创建一个新数组。返回从指定位置开始到结束位置的所有项。该方法不会影响原始数组。
+    - concat(): 用于连接两个或多个数组，仅会返回被连接数组的一个副本。
+    - join(): 接收一个参数作为分隔符的字符串，然后返回包含所有数组项的字符串。
+    - toString(): 返回由数组中的每个值的字符串形式拼接而成的一个以逗号分隔的字符串。
+    - valueOf(): 返回一个数组。
+    - indexOf() / lastIndexOf(): 返回查找原数组的索引，不会改变原数组。
+    - every(): 对数组中的每一项运行给定的函数，如果该函数对每一项都返回true，则返回true。
+    - some(): 对数组中的每一项运行给定的函数，如果该函数对任一项返回true，则返回true。
+    - filter(): 对数组中的每一项运行给定的函数，返回该函数会返回true的项组成的数组。
+    - forEach(): 对数组中的每一项运行给定的函数。这个方法没有返回值。
+    - map(): 对数组中的每一项运行给定的函数，返回每次函数调用的结果组成的数组。
+    - reduce(): 从数组的第一项开始，逐个遍历数组的所有项，接收一个函数作为累加器，数组中的每个值开始缩减，最终计算为一个值。
+    - reduceRight(): 从最后一项开始向前遍历数组的所有项(同上)。
+
+    改变原数组的方法: pop(), push(), shift(), unshift(), sort(), reverse(), splice().
+    不会改变原数组的方法: concat(), join(), slice(), toString(), indexOf(), lastIndexOf(), reduce(), reduceRight(), filter(), forEach(), map(), every(), some().
+
