@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html, body, p, div, img, ul, li, h1, h2, h3, h4, h5, h6{
+            margin: 0;
+            padding: 0;
+        }
+        .mb20{
+            margin-bottom: 20px;
+        }
+        .fl{
+            float: left;
+        }
+        .fr{
+            float: right;
+        }
+        .box1 .left1{
+            width: 100px;
+            height: 200px;
+            background-color: #f35;
+        }
+        .box1 .right1{
+            width: 100px;
+            height: 200px;
+            background-color: #35f;
+        }
+        .box1 .center1{
+            height: 200px;
+            margin: 0 100px 0 100px;
+            background-color: aquamarine;
+        }
+
+        .box2{
+            position: relative;
+        }
+        .box2 .left2{
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 10;
+            width: 100px;
+            height: 200px;
+            background-color: #f35;
+        }
+        .box2 .right2{
+            position: absolute;
+            right: 0;
+            top: 0;
+            z-index: 10;
+            width: 100px;
+            height: 200px;
+            background-color: #35f;
+        }
+        .box2 .center2{
+            height: 200px;
+            margin: 0 100px 0 100px;
+            background-color: aquamarine;
+        }
+
+        .box3{
+            display: table;
+        }
+        .box3 .cell{
+            display: table-cell;
+            vertical-align: center;
+        }
+        .box3 .left3{
+            width: 100px;
+            height: 200px;
+            background-color: #f35;
+        }
+        .box3 .right3{
+            width: 100px;
+            height: 200px;
+            background-color: #35f;
+        }
+        .box4{
+            overflow: hidden;
+        }
+        .box4 .left4{
+            width: 100px;
+            height: 200px;
+            background-color: #f35;
+            margin-left: -100%;
+        }
+        .box4 .right4{
+            width: 100px;
+            height: 200px;
+            background-color: #35f;
+            margin-left: -100px;
+        }
+        .box4 .center4{
+            height: 200px;
+            margin: 0 100px 0 100px;
+            background-color: aquamarine;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="container">
+        <!-- 三列布局，左右两边的元素宽度固定，中间的元素自适应  方法一: 左右两边的元素左右浮动，中间的元素设置左右 margin/padding 的边距 -->
+        <div class="box1 mb20">
+            <div class="left1 fl">left</div>
+            <div class="right1 fr">right</div>
+            <div class="center1">center</div>
+        </div>
+
+        <!-- 三列布局，左右两边的元素宽度固定，中间的元素自适应  方法二: 左右两边的元素absolute定位，中间的元素设置左右 margin/padding 的边距 -->
+        <div class="box2 mb20">
+            <div class="left2">left</div>
+            <div class="center2">center</div>
+            <div class="right2">right</div>
+        </div>
+
+        <!-- 三列布局，左右两边的元素宽度固定，中间的元素自适应  方法二: 父元素display: table，左右子元素display: table-cell -->
+        <div class="box3 mb20">
+            <div class="left3 cell">left</div>
+            <div class="center3">center</div>
+            <div class="right3 cell">right</div>
+        </div>
+
+        <div class="box4 mb20">
+            <div class="center4 fl">center</div>
+            <div class="left4 fl">left</div>
+            <div class="right4 fl">right</div>
+        </div>
+
+
+
+    </div> 
+</body>
+</html>
