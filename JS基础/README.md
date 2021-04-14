@@ -526,7 +526,7 @@
     替而已。通常，HTTP 直接和 TCP 通信。当使用 SSL 时，则演变成先和 SSL 通信，再由 SSL 和 TCP 通信了。简而言之，所谓HTTPS，
     其实就是身披 SSL 协议这层外壳的 HTTP。
 
-### 21.状态吗
+### 21.状态码
     2XX 成功: 2XX 的响应结果表明请求被正常处理了。
         - 200: OK。表示从客户端发来的请求在服务器端被正常处理了。
         - 204: 表示服务器接收的请求已成功处理，但在返回的响应报文中不含实体的主体部分(没有资源可返回)。
@@ -548,11 +548,64 @@
         - 500: 表示服务器端在执行请求时发生了错误。
         - 503: 表示服务器暂时处于超负载或正在进行停机维护。
 
+### 22. 前端错误上报
+    前端错误大体上分为两类:
+        - 代码执行的错误
+        - 资源加载的错误
+    
+    捕获错误的方式:
+        - try-catch: 
+            缺点: 使用try... catch 包裹，影响代码可读性; 无法处理语法错误; 无法处理异步中的错误;
+        
+        - window.onerror: 无论是异步还是非异步错误，onerror 都能捕获到运行时错误。
+            缺点: 监听不到资源加载的报错; onerror 事件处理函数只能声明一次，不会重复执行多个回调;
+        
+        - window.addEventListener('error'): 可以监听到资源加载报错，也可以注册多个事件处理函数。
+            为捕获状态时（第三个参数为true）能捕获到js执行错误，也能捕获带有src的标签元素的加载错误。
+            为冒泡状态时（第三个参数为false）能捕获到js执行错误，不能捕获带有src的标签元素的加载错误。
+        
+        - promise 中的异常: try-catch, window.onerror, widow.addEventlistener 都无法监听到promise 的报错。
+            如果有catch 等捕获函数，则走catch 捕获函数。catch 捕获函数如果没有抛出新的异常，则下一个then将会认为没有什么报错, 会继续执行。
+            如果没有catch 等捕获函数，我们需要注册 window.addEventListener('unhandledrejection') 来处理。
 
+        window.onerror 和 window.addEventListener('error') 的对比:
+            - onerror 只能声明一次,而事件处理器则可以绑定多个回调函数。
+            - onerror 没有办法监听到资源加载的报错，而 addEventListener 则可以监听到。
 
+    捕获资源加载失败的方法:
+        - imgObj.onerror()
+        - performance.getEntries() 获取到成功加载的资源，对比可以间接的捕获错误
+        - window.addEventListener('error', fn, true) 会捕获但是不冒泡，所以window.onerror 不会触发，捕获阶段可以触发
 
+    如何上报错误:
+        - 采用ajax 上报
+        - 使用image上报
 
+        一般来说，大厂都是采用利用image对象的方式上报错误的；使用图片发送get请求，上报信息，由于浏览器对图片有缓存，同样的请求，
+        图片只会发送一次，避免重复上报。
+    
+    使用了 Image 对象来发送请求，这样做非常灵活，主要表现如下几方面:
+        - 所有浏览器都支持 Image 对象，包括那些不支持 XMLHttpRequest 对象的浏览器。
+        - 可以避免跨域限制。通常都是一台服务器要负责处理多台服务器的错误，而这种情况下使用 XMLHttpRequest 是不行的。
+        - 在记录错误的过程中出问题的概率比较低。大多数 Ajax 通信都是由 JavaScript 库提供的包装函 数来处理的，如果库代码本身有
+        问题，而你还在依赖该库记录错误，可想而知，错误消息是不 可能得到记录的。
 
+    ```
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        </head>
+        <body>
+        <script>
+            //通过Image对象进行错误上报
+            (new Image()).src = 'http://smyhvae.com/myPath?badjs=msg';   // myPath表示上报的路径（我要上报到哪里
+            去）。后面的内容是自己加的参数。
+        </script>
+        </body>
+        </html>
+    ```
 
 
 

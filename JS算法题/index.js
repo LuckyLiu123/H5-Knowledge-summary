@@ -557,7 +557,31 @@ Function.prototype.bind2 = function(content){
 }
 
 /**
- * 12. J原型链继承
+ * 12. 实现一个 new 操作符
+ * 
+ * new 操作符做的事情:
+ *   - 它创建一个全新的对象
+ *   - 它会被执行 [[prototype]] (也就是__proto__)连接
+ *   - 它使 this 指向新创建的对象
+ *   - 通过 new 创建的每个对象将最终被 [[prototype]] 链接到这个函数的 prototype 对象上
+ *   - 如果函数没有返回对象类型 Object(包含 Function, Array, Date, RegExg, Error)，那么 new 表达式中的函数调用将返回该对象引用
+*/
+function New(func){
+    var res = {};
+    if(func.prototype !== null){
+        res.__proto__ = func.prototype;
+    }
+
+    var ret = func.apply(res, Array.prototype.slice.call(arguments, 1));
+    if((typeof ret === 'object' || typeof ret === 'function') && ret !== null){
+        return ret;
+    }
+    return res;
+}
+
+/************************************ JS 继承的几种方式 ***********************************/
+/**
+ * 13. JS原型链继承
 */
     // Personal 对象想要继承 Main 对象，则通过将 Main 的实例赋值给 Personal 的原型对象 
     Personal.prototype = new Main();
@@ -599,29 +623,126 @@ Function.prototype.bind2 = function(content){
     // Personal.prototype = new Main(); 因此找不到一开始定义在 Personal.prototype 上的 name 属性和 sayName()方法。因此
     // 在使用原型链继承的时候，要在继承之后再去原型对象上定义自己所需要的属性和方法。
 
-/**
- * 13. 实现一个 new 操作符
- * 
- * new 操作符做的事情:
- *   - 它创建一个全新的对象
- *   - 它会被执行 [[prototype]] (也就是__proto__)连接
- *   - 它使 this 指向新创建的对象
- *   - 通过 new 创建的每个对象将最终被 [[prototype]] 链接到这个函数的 prototype 对象上
- *   - 如果函数没有返回对象类型 Object(包含 Function, Array, Date, RegExg, Error)，那么 new 表达式中的函数调用将返回该对象引用
-*/
-function New(func){
-    var res = {};
-    if(func.prototype !== null){
-        res.__proto__ = func.prototype;
-    }
+    /**
+     * 缺点:
+     *  - 引用类型的值会被所有的实例共享。
+     *  - 在创建子类型的实例时，不能向超类型的构造函数中传递参数。应该说没有办法在不影响所有对象实例的情况下，给超类型的构造函数传递参数
+    */
 
-    var ret = func.apply(res, Array.prototype.slice.call(arguments, 1));
-    if((typeof ret === 'object' || typeof ret === 'function') && ret !== null){
-        return ret;
-    }
-    return res;
+/**
+ * 14. 借用构造函数
+ *   解决原型中包含引用类型值所带来的问题
+ *   原理: 子类型构造函数的内部调用超类型构造函数, 通过call()方法或apply()方法
+*/
+function SuperType(){
+    this.colors = ['red', 'blue', 'green'];
 }
 
+function SubType(){
+    //继承了SuperType
+    SuperType.call(this);
+}
+
+var instance1 = new SubType();
+
+/**
+ * 缺点: 如果仅仅是借用构造函数，那么也将无法避免构造函数模式存在的问题: 方法都在构造函数中定义，
+ *      因此函数复用就无从谈起。而且，在超类型的原型中定义的方法，对子类型而言也是不可见的。
+*/
+
+/**
+ * 15. 组合继承
+ *    将原型链和借用构造函数的技术组合到一起
+ *  思路: 使用原型链实现对原型属性和方法的继承，而通过借用构造函数来实现对实例属性的继承。
+*/
+function SuperType(name){
+    this.name = name;
+    this.colors = ['red', 'blue', 'green'];
+}
+
+SuperType.prototype.sayName = function(){
+
+}
+
+function SubType(name, age){
+    SuperType.call(this, name);
+    this.age = age;
+}
+
+SubType.prototype = new SuperType();
+SubType.prototype.constructor = SubType;
+
+SubType.prototype.sayAge = function(){
+
+}
+
+var instance2 = new SubType('zhangsan', 20);
+
+/**
+ * 组合继承避免了原型链和借用构造函数的缺陷，融合了它们的优点，是JavaScript中最常用的继承模式
+ * 可以使用 instanceof 和 isPrototypeof() 能够识别基于组合继承创建的对象。
+ * 
+ * 缺点: 无论什么情况下，都会调用两次超类型的构造函数: 一次是在创建子类型原型的时候，另一次是在子类型构造函数内部。
+*/
+
+/**
+ * 16. 原型式继承
+ *   借助原型可以基于已有的对象创建新对象，同时还不必因此创建自定义类型。
+ *   在 object() 函数内部，先创建一个临时性的构造函数，然后将传入的对象作为这个构造函数的原型，最后返回了这个临时类型的一个新实例。
+*/
+function object(o){
+    function F(){}
+    F.prototype = o;
+    return new F();
+}
+
+//注: 包含引用类型值的属性始终都会共享相应的值，就像使用原型模式一样。
+
+/**
+ * 17. 寄生式继承
+ *   寄生式继承是与原型式继承紧密相关的一种思路。寄生式继承的思路与寄生构造函数和工厂模式类似，即创建一个仅用于封装过程的函数，
+ *   该函数在内部以某种方式来增强对象，最后再像真地是它做了所有工作一样返回对象。
+*/
+function createAnother(original){
+    var clone = object(original);     //通过调用函数创建一个新对象
+    clone.sayHi = function(){    //以某种方式来增强这个对象
+        console.log('Hi');
+    }
+    return clone;
+}
+
+//前面示范继承模式时使用的 object() 函数不是必需的，任何能够返回新对象的函数都适用于此模式。
+
+/**
+ * 18. 寄生组合式继承
+ *   借用构造函数来继承属性，通过原型链的混成形式来继承方法。
+ *   思路: 使用寄生式继承来继承超类型的原型，然后再将结果指定给子类型的原型。
+*/
+function inheritPrototype(subType, superType){
+    var prototype = object(superType.prototype);    //创建对象
+    prototype.constructor = subType;     //增强对象
+    subType.prototype = prototype;      //指定对象
+}
+
+function SuperType(name){
+    this.name = name;
+    this.colors = ['red', 'blue', 'green'];
+}
+
+SuperType.prototype.sayName = function(){
+    console.log(this.name);
+}
+
+function SubType(name, age){
+    SuperType.call(tihs, name);
+    this.age = age;
+}
+
+inheritPrototype(SubType, SuperType);
+
+SubType.prototype.sayAge = function(){
+    console.log(this.age);
+}
 
 
 
