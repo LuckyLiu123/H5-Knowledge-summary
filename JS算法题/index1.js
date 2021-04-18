@@ -21,8 +21,55 @@ function findSecondNumber(){
     console.log('最大值:' + a + ' ;第二大:' + b);
 }
 
+/**
+ * 2. 字符串翻转 方法一
+ * 考虑32位有符号的整数，设置数值范围，超过则返回0
+*/
+const reverse1 = (x) => {
+    if(typeof x !== 'number'){
+        return;
+    }
+    const MAX = 2147483647;
+    const MIN = -2147483648;
 
+    //识别数字剩余部分并翻转
+    const rest = x > 0 ? String(x).split('').reverse().join('') : String(x).slice(1).split('').reverse().join('');
+    
+    //转换位正常值，区分正负数
+    const result = x > 0 ? parseInt(rest, 10) : 0 - parseInt(rest, 10);
 
+    //边界情况
+    if(result >= MIN && result <= MAX){
+        return result;
+    }
+    return 0;
+}
+
+/**
+ * 方法二
+*/
+const reverse2 = (x) => {
+    let int = Math.abs(x);
+    const MAX = 2147483647;
+    const MIN = -2147483648;
+    let num = 0;
+
+    while(int !== 0){
+        //借鉴欧几里得算法，从 num 的最后一位开始取值拼成新的数
+        num = (int % 10) + (num * 10);
+        //剔除掉被消费的部分
+        int = Math.floor(int / 10);
+    }
+
+    if(num > MAX || num < MIN){
+        return 0;
+    }
+
+    if(x < 0){
+        return num * -1;
+    }
+    return num;
+}
 
 
 
