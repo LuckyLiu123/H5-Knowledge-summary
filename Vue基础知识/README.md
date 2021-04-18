@@ -224,6 +224,8 @@
 
         (10) 服务端渲染 SSR or 预渲染
 
+        (11) 页面中组件太多可以使用异步组件优化
+
     2. Webpack 层面的优化
         (1) Webpack 对图片进行压缩
             在 vue 项目中除了可以在 webpack.base.conf.js 中 url-loader 中设置 limit 大小来对图片处理，对小于 limit 的图片转化为 base64 格式，其余的不做操作。所以对有些较大的图片资源，在请求资源的时候，加载会很慢，我们可以用 image-webpack-loader来压缩图片。
