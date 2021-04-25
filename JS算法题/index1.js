@@ -71,11 +71,77 @@ const reverse2 = (x) => {
     return num;
 }
 
+/**
+ * 3. 有效的字母异位词
+ * 给定两个字符串 s 和 t ，编写一个函数来判断 t 是否是 s 的字母异位词。
+ * 思路: 首先，对字符串字母进行排序，然后，比较两字符串是否相等。
+ * 方法一:
+ * 时间复杂度为 O(nlogn)
+*/
+const isAnagram1 = (s, t) => {
+    const sArr = s.split('');
+    const tArr = t.split('');
+
+    const sortFn = (a, b) => {
+        return a.charCodeAt() - b.charCodeAt();
+    }
+
+    sArr.sort(sortFn);
+    tArr.sort(sortFn);
+    return sArr.join('') === tArr.join('');
+}
+
+//方法二
+//思路: 声明一个对象记录字符串每个字母的个数，另外一个字符串每项与得到的对象做匹配，最后，根据计数判断是否相等。
+//时间复杂度为 O(n)
+const isAnagram2 = (s, t) => {
+    if(s.length !== t.length){
+        return false;
+    }
+
+    const hash = {};
+    for(const k of s){
+        hash[k] = hash[k] || 0;
+        hash[k] += 1;
+    }
+
+    for(const k of t){
+        if(!hash[k]){
+            return false;
+        }
+        hash[k] -= 1;
+    }
+    return true;
+}
 
 
+/**
+ * 4. 字符串转换整数
+ * 方法一
+*/
+const myAtoi1 = function(str){
+    //用正则提取需要的字符
+    const result = str.trim().match(/^(-|\+)?\d+/g);
+    return result ? Math.max(Math.min(Number(result[0]), Math.pow(2, 31) - 1) , -Math.pow(2, 31)) : 0;
+}
 
+//方法二
+const myAtoi2 = function(str){
+    const news = str.trim();
+    if(parseInt(news)){
+        return returnNum(parseInt(news));
+    }else{
+        return 0;
+    }
+}
 
-
+const returnNum = function(num){
+    if(num >= -Math.pow(2, 31) && num <= Math.pow(2, 31) - 1){
+        return num;
+    }else{
+        return num > 0 ? Math.pow(2, 31) - 1 : -Math.pow(2, 31);
+    }
+}
 
 
 
